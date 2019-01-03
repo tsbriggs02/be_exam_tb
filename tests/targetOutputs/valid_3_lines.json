@@ -1,0 +1,26 @@
+[
+    {
+        "id": 12345678,
+        "name": {
+            "first": "Bobby",
+            "last": "Tables"
+        },
+        "phone": "555-555-5555"
+    },
+    {
+        "id": 12345679,
+        "name": {
+            "first": "Carl",
+            "last": "Tables"
+        },
+        "phone": "555-555-6666"
+    },
+    {
+        "id": 12345680,
+        "name": {
+            "first": "Joey",
+            "last": "Tables"
+        },
+        "phone": "555-555-7777"
+    }
+]

@@ -138,15 +138,21 @@ def write_output(output, output_filename):
     out.close()
 
 
+def write_errors_to_fh(errors_for_csv, error_fh):
+    if len(errors_for_csv) == 0:
+        return # Nothing to do
+    writer = csv.writer(error_fh)
+    writer.writerow(["LINE_NUM", "ERROR_MSG"])
+    writer.writerows(errors_for_csv)
+
+
 def write_errors(errors_for_csv, error_filename):
     if len(errors_for_csv) == 0:
         return # Nothing to do
 
     print("Writing ", len(errors_for_csv), " errors to '", error_filename, "'")
     out = open(error_filename, 'w')
-    writer = csv.writer(out)
-    writer.writerow(["LINE_NUM", "ERROR_MSG"])
-    writer.writerows(errors_for_csv)
+    write_errors_to_fh(out)
     out.close()
 
 
@@ -206,27 +212,29 @@ class EventHandler(pyinotify.ProcessEvent):
 # MAIN
 ############################################
 
-INPUT_DIR, ERROR_DIR, OUTPUT_DIR = get_directories()
-print("Input dir:", INPUT_DIR)
-print("Error dir:", ERROR_DIR)
-print("Output dir:", OUTPUT_DIR)
+if __name__ == '__main__':
+    INPUT_DIR, ERROR_DIR, OUTPUT_DIR = get_directories()
+    print("Input dir:", INPUT_DIR)
+    print("Error dir:", ERROR_DIR)
+    print("Output dir:", OUTPUT_DIR)
 
-# First, process all the *.csv files in INPUT_DIR
-all_files = os.listdir(INPUT_DIR)
-all_files = [f for f in all_files if f.endswith('.csv')]
-for f in all_files:
-    consider_file(os.path.join(INPUT_DIR, f))
+    # First, process all the *.csv files in INPUT_DIR
+    all_files = os.listdir(INPUT_DIR)
+    all_files = [f for f in all_files if f.endswith('.csv')]
+    for f in all_files:
+        consider_file(os.path.join(INPUT_DIR, f))
 
-# Now that we've processed all the files that were there on startup,
-# watch for new ones
+    # Now that we've processed all the files that were there on startup,
+    # watch for new ones
 
-# The watch manager stores the watches and provides operations on watches
-wm = pyinotify.WatchManager()
+    # The watch manager stores the watches and provides operations on watches
+    wm = pyinotify.WatchManager()
 
-handler = EventHandler()
-notifier = pyinotify.Notifier(wm, handler)
+    handler = EventHandler()
+    notifier = pyinotify.Notifier(wm, handler)
 
-wdd = wm.add_watch(INPUT_DIR, pyinotify.IN_CREATE)
+    wdd = wm.add_watch(INPUT_DIR, pyinotify.IN_CREATE)
 
-print("Press Ctrl-C to exit...")
-notifier.loop()
+    print("Press Ctrl-C to exit...")
+    notifier.loop()
+
